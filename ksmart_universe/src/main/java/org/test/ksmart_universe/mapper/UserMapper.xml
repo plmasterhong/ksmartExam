@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.test.ksmart_universe.mapper.UserMapper">
+	<select id="selectList"
+		parameterType="String" resultType="org.test.ksmart_universe.vo.User">
+		SELECT 
+			m_id AS memberId,
+			m_pw AS memberPw,
+			m_level AS memberLevel,
+			m_name AS memberName,
+			m_email AS memberEmail
+		FROM
+			tb_member
+		<if test="sv neq null and sv neq ''.toString()">
+			WHERE
+				${sk} LIKE CONCAT('%',#{sv},'%')
+		</if>
+	</select>
+	
+	<insert id="addUser" 
+	parameterType="org.test.ksmart_universe.vo.User">
+		INSERT INTO tb_member
+		(	 m_id
+			,m_pw
+			,m_level
+			,m_name
+			,m_email	
+		)VALUES(
+			 #{memberId}
+			,#{memberPw}
+			,#{memberLevel}
+			,#{memberName}
+			,#{memberEmail}
+		)
+	</insert>
+	
+	<select id="getUserById"
+		parameterType="String"
+		resultType="org.test.ksmart_universe.vo.User">
+		SELECT 
+			m_id AS memberId,
+			m_pw AS memberPw,
+			m_level AS memberLevel,
+			m_name AS memberName,
+			m_email AS memberEmail
+		FROM
+			tb_member
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+			<if test="memberId neq null and memberId neq ''.toString()">
+				m_id = #{memberId}		
+			</if>
+			<if test="memberPw neq null and memberPw neq ''.toString()">
+				AND m_pw = #{memberPw}		
+			</if>
+		</trim>
+	</select>
+	
+	<update id="modifyUser"
+		parameterType="org.test.ksmart_universe.vo.User">
+		UPDATE tb_member
+		<trim prefix="SET" prefixOverrides=",">
+			 <if test="memberPw != null and memberPw != ''.toString()">	 
+				 m_pw = #{memberPw}
+			 </if>
+			 <if test="memberLevel != null and memberLevel != ''.toString()">	 
+				 ,m_level = #{memberLevel}
+			 </if>
+			 <if test="memberName != null and memberName != ''.toString()">	 
+				 ,m_name = #{memberName}
+			 </if>
+			 <if test="memberEmail != null and memberEmail != ''.toString()">	 
+				 ,m_email = #{memberEmail}
+			 </if>
+		</trim>
+		WHERE m_id = #{memberId}		
+	</update>
+	
+	<delete id="deleteUser" parameterType="String">
+		DELETE 
+		FROM 
+			tb_member
+		WHERE
+			m_id = #{memberId}
+	</delete>
+	
+</mapper>
